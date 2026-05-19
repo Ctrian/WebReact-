@@ -1,0 +1,34 @@
+<html lang="es">
+<head>
+    <title>Ejemplo 1</title>
+
+
+    <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
+
+    <script language="JavaScript">
+        $(document).ready(function () {
+
+            var text = "mundo!";
+
+            $('#miBoton').click(function () {
+
+
+                $('#miSpan').html(text);
+                $('#root').append("<p>Nuevo Parrafo</p>");
+            });
+        });
+    </script>
+</head>
+
+<body>
+Hola <span id="miSpan">mundo!</span>
+<br/>
+<button id="miBoton">Click</button>
+
+<br/>
+<div id="root" style="border: 2px solid black;">
+    Mi Root
+</div>
+</body>
+</html>
+
