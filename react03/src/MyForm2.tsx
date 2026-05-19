@@ -6,12 +6,9 @@ function MyForm2(){
         const edad = formData.get("edad")
 
         alert (`Nombre: ${nombre}, Edad: ${edad} `);
-
-
     }
 
     return(
-
         <form action = {buscar}>
             <div>
                 Nombre: <input type="text" name ="nombre" />
