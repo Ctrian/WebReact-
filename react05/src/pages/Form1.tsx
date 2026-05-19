@@ -6,7 +6,7 @@ function Form1() {
     const [name, setName] = useState("");
     const navigate = useNavigate();
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
         event.preventDefault();
         navigate("/form2", { state: { message: name } });
     };
@@ -21,7 +21,7 @@ function Form1() {
             onChange={(e)=> setName(e.target.value)}
             placeholder="Ingrese su nombre"/>
 
-                <button onClick={handleSubmit}>Enviar</button>
+                <button type={"submit"}>Enviar</button>
             </form>
         </>
     )
