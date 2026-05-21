@@ -21,8 +21,8 @@ interface Posts {
 const darkTheme = createTheme({
     palette: {
         mode: "dark",
-        primary: { main: '#90caf9' },
-        secondary: { main: '#f48fb1' }
+        primary: {main: '#90caf9'},
+        secondary: {main: '#f48fb1'}
     }
 })
 
@@ -47,33 +47,33 @@ function Posts() {
             </Typography>
 
             <Button
-            variant="contained"
-            color="primary"
-            onClick={() => fetchPosts()}
-            disabled={loading}
+                variant="contained"
+                color="primary"
+                onClick={() => fetchPosts()}
+                disabled={loading}
             >
-                {loading ? "Cargando...":"Cargar Posts"}
+                {loading ? "Cargando..." : "Cargar Posts"}
             </Button>
             {<ThemeProvider theme={darkTheme}>
-            <Table sx={{mt: 2}}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell sx={{color: "green", textAlign: "center"}}>ID</TableCell>
-                        <TableCell sx={{color: "green", textAlign: "center"}}>Titulo</TableCell>
-                        <TableCell sx={{color: "green", textAlign: "center"}}>Body</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {posts.map((post)=> (
-                        <TableRow key={post.id}>
-                            <TableCell sx={{color: "red", textAlign: "center"}}>{post.id}</TableCell>
-                            <TableCell sx={{color: "red", textAlign: "center"}}>{post.title}</TableCell>
-                            <TableCell sx={{color: "red", textAlign: "center"}}>{post.body}</TableCell>
+                <Table sx={{mt: 2}}>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{color: "green", textAlign: "center"}}>ID</TableCell>
+                            <TableCell sx={{color: "green", textAlign: "center"}}>Titulo</TableCell>
+                            <TableCell sx={{color: "green", textAlign: "center"}}>Body</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
-                </ThemeProvider>}
+                    </TableHead>
+                    <TableBody>
+                        {posts.map((post) => (
+                            <TableRow key={post.id}>
+                                <TableCell sx={{color: "red", textAlign: "center"}}>{post.id}</TableCell>
+                                <TableCell sx={{color: "red", textAlign: "center"}}>{post.title}</TableCell>
+                                <TableCell sx={{color: "red", textAlign: "center"}}>{post.body}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </ThemeProvider>}
         </Container>
     )
 }
