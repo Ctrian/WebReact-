@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {
     Button,
@@ -11,6 +11,7 @@ import {
     TableRow, ThemeProvider,
     Typography
 } from "@mui/material";
+import {Link} from "react-router-dom";
 
 interface Posts {
     id: number;
@@ -29,15 +30,27 @@ const darkTheme = createTheme({
 function Posts() {
     const [posts, setPosts] = useState<Posts[]>([]);
     const [loading, setLoading] = useState(false);
-    const fetchPosts = () => {
+    // const fetchPosts = () => {
+    //     setLoading(true);
+    //     axios.get<Posts[]>("https://jsonplaceholder.typicode.com/posts")
+    //         .then(r => {
+    //             setPosts(r.data);
+    //         })
+    //         .catch(e => alert("Error al cargar los posts: " + e))
+    //         .finally(() => setLoading(false));
+    // }
+
+    useEffect(() => {
         setLoading(true);
         axios.get<Posts[]>("https://jsonplaceholder.typicode.com/posts")
-            .then(r => {
+            .then(r=> {
                 setPosts(r.data);
             })
-            .catch(e => alert("Error al cargar los posts: " + e))
-            .finally(() => setLoading(false));
-    }
+            .catch(e=> alert(
+                e
+            ))
+            .finally(()=> setLoading(false))
+    }, [])
 
     return (
         <Container sx={{mt: 4}}>
@@ -46,21 +59,24 @@ function Posts() {
                 Posts
             </Typography>
 
-            <Button
-                variant="contained"
-                color="primary"
-                onClick={() => fetchPosts()}
-                disabled={loading}
-            >
-                {loading ? "Cargando..." : "Cargar Posts"}
-            </Button>
-            {<ThemeProvider theme={darkTheme}>
+            {/*<Button*/}
+            {/*    variant="contained"*/}
+            {/*    color="primary"*/}
+            {/*    onClick={() => fetchPosts()}*/}
+            {/*    disabled={loading}*/}
+            {/*>*/}
+            {/*    {loading ? "Cargando..." : "Cargar Posts"}*/}
+            {/*</Button>*/}
+            {loading ? (
+                <Typography variant="h6">Cargando posts...</Typography>
+            ) : <ThemeProvider theme={darkTheme}>
                 <Table sx={{mt: 2}}>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{color: "green", textAlign: "center"}}>ID</TableCell>
                             <TableCell sx={{color: "green", textAlign: "center"}}>Titulo</TableCell>
                             <TableCell sx={{color: "green", textAlign: "center"}}>Body</TableCell>
+                            <TableCell sx={{color: "green", textAlign: "center"}}>Acción</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -69,6 +85,11 @@ function Posts() {
                                 <TableCell sx={{color: "red", textAlign: "center"}}>{post.id}</TableCell>
                                 <TableCell sx={{color: "red", textAlign: "center"}}>{post.title}</TableCell>
                                 <TableCell sx={{color: "red", textAlign: "center"}}>{post.body}</TableCell>
+                                <TableCell sx={{color: "red", textAlign: "center"}}>
+                                    <Button color={"secondary"} variant={"outlined"} component={Link} to={`/posts/${post.id}`}>
+                                        Ver Detalle
+                                    </Button>
+                                </TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
