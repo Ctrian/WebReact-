@@ -12,7 +12,6 @@ function App() {
         } else {
             setName("mundo!");
         }
-
     }
     interface Hello2Props {
         name: string;

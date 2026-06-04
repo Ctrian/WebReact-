@@ -1,15 +1,7 @@
 import { List, ListItemButton, ListItemIcon, ListItemText, Box } from "@mui/material";
-import HomeIcon from "@mui/icons-material/Home";
-import AlarmIcon from "@mui/icons-material/Alarm";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import { Link, useLocation } from "react-router-dom";
 import difLogo from "../assets/dif.svg";
-
-const navItems = [
-  { label: "Inicio", icon: <HomeIcon />, path: "/" },
-  { label: "Alarmas", icon: <AlarmIcon />, path: "/alarmas" },
-  { label: "Tableros", icon: <DashboardIcon />, path: "/tableros" },
-];
+import { navItems } from "./navItems";
 
 function SideNav() {
   const location = useLocation();
