@@ -34,12 +34,13 @@ function SideNav() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          py: 3,
+          py: 2,
+          px: 5,
           borderBottom: "1px solid rgba(255,255,255,0.1)",
         }}
       >
         <Link to="/">
-          <img src={difLogo} alt="Logo Difasel" height={40} />
+          <img src={difLogo} alt="Logo Difasel" height={35} />
         </Link>
       </Box>
 
