@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:8080/api
+
+### Hola Mundo
+GET {{baseUrl}}/hola/mundo
+Accept: text/plain
+
+### Hello World
+GET {{baseUrl}}/hola/world/andres
+Accept: text/plain
+
+### Path Param
+GET {{baseUrl}}/hola/mundo/andres/olivares
+Accept: text/plain
+
+### Query Param
+GET {{baseUrl}}/hola/mundo1?nombre=andres
+Accept: text/plain
+
+### PathParam y QueryParam
+GET {{baseUrl}}/hola/personas/123
+Accept: application/json
+
+### Obtener cabeceras
+GET {{baseUrl}}/hola/mundo2?nombre=Juan
+Accept: text/plain

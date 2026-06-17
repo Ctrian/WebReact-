@@ -1,0 +1,16 @@
+# Gradle build and cache output
+.gradle/
+build/
+
+# IntelliJ / IDE files
+*.iml
+.idea/
+
+# Local environment / logs
+*.log
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
