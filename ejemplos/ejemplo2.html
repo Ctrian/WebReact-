@@ -1,34 +1,34 @@
 <html lang="es">
-<head>
+  <head>
     <title>Ejemplo 1</title>
-
 
     <script src="https://code.jquery.com/jquery-4.0.0.js"></script>
 
     <script language="JavaScript">
-        $(document).ready(function () {
+      $(document).ready(function () {
+        var text = "mundo!";
 
-            var text = "mundo!";
+        $("#miBoton").click(function () {
+          if (text === "mundo!") {
+            $("#miSpan").html("JQuery!");
+            text = "JQuery!";
+          } else {
+            $("#miSpan").html("mundo!");
+            text = "mundo!";
+          }
 
-            $('#miBoton').click(function () {
-
-
-                $('#miSpan').html(text);
-                $('#root').append("<p>Nuevo Parrafo</p>");
-            });
+          $("#root").append(`<p>Nuevo ${text}</p>`);
         });
+      });
     </script>
-</head>
+  </head>
 
-<body>
-Hola <span id="miSpan">mundo!</span>
-<br/>
-<button id="miBoton">Click</button>
+  <body>
+    Hola <span id="miSpan">mundo!</span>
+    <br />
+    <button id="miBoton">Click</button>
 
-<br/>
-<div id="root" style="border: 2px solid black;">
-    Mi Root
-</div>
-</body>
+    <br />
+    <div id="root" style="border: 2px solid black">Mi Root</div>
+  </body>
 </html>
-

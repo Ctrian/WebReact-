@@ -1,4 +1,4 @@
-# Node dependencies
+﻿# Node modules
 node_modules/
 **/node_modules/
 
@@ -8,30 +8,45 @@ build/
 **/dist/
 **/build/
 .vite/
+out/
+**/bin/
 
-# Gradle build output
-.gradle/
-**/.gradle/
-
-# TypeScript cache
+# TypeScript
 *.tsbuildinfo
 
-# Editor directories and files
+# Environment files
+.env
+.env.*
+
+# IDE/editor directories and files
 .idea/
 .vscode/
 *.iml
-
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Environment variables
-.env
-.env.*
+*.swp
+*.swo
 
 # OS files
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+hs_err_pid*.log
+
+# Testing
+coverage/
+.nyc_output/
+
+# Cache/temp
+.cache/
+temp/
+tmp/
+
+# Gradle
+.gradle/
+**/.gradle/
