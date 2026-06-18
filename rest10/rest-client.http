@@ -23,3 +23,25 @@ Accept: application/json
 ### Obtener cabeceras
 GET {{baseUrl}}/hola/mundo2?nombre=Juan
 Accept: text/plain
+
+### Chao Rest
+GET {{baseUrl}}/chao/mundo
+Accept: text/plain
+
+### Buscar customer x id
+GET {{baseUrl}}/customers/3
+Accept: application/json
+
+### uso de Response para codigo de estado personaliado
+// Adicional deberia aparecer una cabecera personaliada
+GET {{baseUrl}}/customers/response/6
+Accept: application/json
+
+### Crear customer (JVM) - no persistence
+POST {{baseUrl}}/customers
+Content-Type: application/json
+
+{
+    "nombre": "cliente nuevo 6",
+    "direccion": "dir nueva 6"
+}

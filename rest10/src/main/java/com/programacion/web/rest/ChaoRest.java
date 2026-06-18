@@ -13,6 +13,6 @@ public class ChaoRest {
     @Produces("text/plain")
     @Path("mundo")
     public String chao() {
-        return "chao rest" + LocalDateTime.now();
+        return "chao rest : " + LocalDateTime.now();
     }
 }

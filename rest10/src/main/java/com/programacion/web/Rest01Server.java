@@ -16,7 +16,7 @@ public class Rest01Server {
                 .thenAccept(instance -> {
                     System.out.println(instance + "\n");
                     URI uri = instance.configuration().baseUri();
-                    System.out.println(uri);
+                    System.out.println("Server started at: " + uri);
                     System.out.println(uri.getHost() + ":" + uri.getPort());
                 });
 
