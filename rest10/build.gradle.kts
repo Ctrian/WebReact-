@@ -13,7 +13,7 @@ repositories {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(21))
     }
 }
 
@@ -22,7 +22,6 @@ dependencies {
     implementation("org.jboss.resteasy:resteasy-undertow:7.0.2.Final")
     
     implementation("org.jboss.resteasy:resteasy-client:7.0.2.Final")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
 
     // rest easy - json b
     implementation("org.jboss.resteasy:resteasy-json-binding-provider:7.0.2.Final")
