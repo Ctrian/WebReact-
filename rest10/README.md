@@ -3,7 +3,7 @@
 Pequeño proyecto REST con Jakarta RESTEasy + Undertow para pruebas locales.
 
 Requisitos
-- Java 17
+- Java 24
 - (Opcional) Gradle local o usar el wrapper incluido
 
 Comandos útiles
@@ -41,9 +41,11 @@ curl -i http://localhost:8080/api/hola/mundo
 
 Notas
 - Se añadió el plugin `application` en `build.gradle.kts` para permitir `gradlew run`.
+- El proyecto está configurado con toolchain de Java 24 en `build.gradle.kts`.
 - Si obtienes errores al ejecutar `java -cp ...`, usa `gradlew run` para garantizar el classpath completo.
 - Para detener el servidor presiona `Ctrl+C` en la terminal donde ejecutaste `gradlew run`.
 
 Solución de problemas
+- Si Gradle indica que no encuentra Java, instala un JDK 24 y configura `JAVA_HOME`.
 - Si el puerto 8080 está en uso, modifica `Rest01Server` o detén el servicio que ocupa el puerto.
 - Si la petición falla por cabeceras, evita problemas de quoting en `cmd` y usa PowerShell o curl desde WSL.
