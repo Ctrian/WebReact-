@@ -1,12 +1,13 @@
 package com.programacion.web.config;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Disposes;
+import jakarta.enterprise.inject.Produces;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
-import jakarta.ws.rs.Produces;
 
 /**
  * Puente entre CDI (Weld) y JPA (Hibernate).
@@ -55,7 +56,13 @@ public class JpaConfig {
      */
     @Produces
     @ApplicationScoped
-    public EntityManager EntityManager() {
+    public EntityManagerFactory emf() {
+        return emf;
+    }
+
+    @Produces
+    @ApplicationScoped
+    public EntityManager entityManager() {
         return emf.createEntityManager();
     }
 
@@ -68,6 +75,13 @@ public class JpaConfig {
      */
     void closeEntityManager(@Disposes EntityManager em) {
         if (em != null && em.isOpen()) {
+            em.close();
+        }
+    }
+
+    @PreDestroy
+    void closeEntityManagerFactory() {
+        if (emf != null && emf.isOpen()) {
             emf.close();
         }
     }

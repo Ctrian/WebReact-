@@ -1,0 +1,32 @@
+<beans
+        xmlns="https://jakarta.ee/xml/ns/jakartaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee
+        https://jakarta.ee/xml/ns/jakartaee/beans_4_0.xsd"
+        version="4.0" bean-discovery-mode="annotated">
+
+    <!--
+        Descriptor de CDI (Contexts and Dependency Injection).
+
+        Este archivo no configura JPA ni llama directamente a persistence.xml.
+        Su función es indicar que este módulo participa en CDI y definir cómo
+        Weld debe descubrir los beans administrados.
+
+        bean-discovery-mode="annotated" significa que Weld descubre clases con
+        anotaciones CDI que definen su alcance, por ejemplo:
+
+            @ApplicationScoped
+            public class JpaConfig { ... }
+
+        Después de descubrir JpaConfig, Weld administra su ciclo de vida y
+        ejecuta métodos como @PostConstruct. Es el método init() de JpaConfig,
+        no beans.xml, el que llama a:
+
+            Persistence.createEntityManagerFactory("place")
+
+        Esa llamada provoca que JPA lea META-INF/persistence.xml.
+
+        Aunque este archivo no tenga elementos hijos, no está "vacío": sus
+        atributos establecen la versión de CDI y el modo de descubrimiento.
+    -->
+</beans>

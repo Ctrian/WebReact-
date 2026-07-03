@@ -1,0 +1,61 @@
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+
+    <!--
+        Unidad de persistencia utilizada por:
+
+            Persistence.createEntityManagerFactory("place")
+
+        Este XML no crea por sí mismo EntityManagerFactory ni EntityManager.
+        Solamente contiene la configuración que JPA leerá cuando el código
+        invoque createEntityManagerFactory("place").
+
+        RESOURCE_LOCAL indica que la aplicación controla directamente las
+        transacciones mediante begin(), commit() y rollback().
+    -->
+    <persistence-unit name="place" transaction-type="RESOURCE_LOCAL">
+
+        <!-- Hibernate es la implementación concreta de Jakarta Persistence. -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>com.programacion.web.db.User</class>
+
+        <properties>
+            <!--
+                Configuración JDBC utilizada por Hibernate para conectarse a
+                PostgreSQL. El driver está disponible gracias a la dependencia
+                org.postgresql:postgresql declarada en build.gradle.kts.
+            -->
+            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver" />
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/place" />
+            <property name="jakarta.persistence.jdbc.user" value="postgres" />
+
+            <!--
+                Para proyectos reales no conviene guardar contraseñas en el
+                repositorio. Es preferible leerlas desde variables de entorno,
+                secretos o una configuración externa.
+            -->
+            <property name="jakarta.persistence.jdbc.password" value="RAAGj731" />
+
+            <!-- Muestra el SQL ejecutado por Hibernate en la terminal. -->
+            <property name="hibernate.show_sql" value="true" />
+
+            <!-- Presenta el SQL con saltos de línea e indentación. -->
+            <property name="hibernate.format_sql" value="true" />
+
+            <!-- Añade colores ANSI al SQL cuando la terminal los admite. -->
+            <property name="hibernate.highlight_sql" value="true" />
+
+            <!--
+                Si se activa, Hibernate intenta actualizar el esquema de la
+                base de datos para ajustarlo a las entidades encontradas.
+                Debe usarse con cuidado, especialmente en producción.
+
+                <property
+                    name="jakarta.persistence.schema-generation.database.action"
+                    value="update" />
+            -->
+        </properties>
+    </persistence-unit>
+</persistence>

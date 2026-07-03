@@ -5,6 +5,7 @@ Esta guía explica cómo se conectan los siguientes archivos del proyecto:
 - `build.gradle.kts`
 - `RestPostMain.java`
 - `JpaConfig.java`
+- `User.java`
 - `META-INF/persistence.xml`
 - `META-INF/beans.xml`
 - `MyApplication.java`
@@ -41,6 +42,40 @@ build.gradle.kts
 
 Este archivo administra las dependencias y la construcción del proyecto.
 
+### Java 21
+
+El proyecto debe compilarse con una versión de Java compatible con las librerías usadas por CDI/Weld, Jandex y DeltaSpike.
+
+```kotlin
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+```
+
+Esto evita errores como:
+
+```text
+Unsupported class file major version 68
+```
+
+`major version 68` corresponde a clases compiladas con Java 24. Si IntelliJ o Gradle usan JDK 24 para compilar, algunas librerías de escaneo de clases pueden fallar. Para este proyecto se fijó Java 21 porque es estable y compatible con el conjunto actual de dependencias.
+
+Después de cambiar la versión de Java conviene limpiar y recompilar:
+
+```powershell
+.\gradlew.bat clean run
+```
+
+En IntelliJ IDEA también debe revisarse:
+
+```text
+Settings / Build, Execution, Deployment / Build Tools / Gradle / Gradle JVM
+```
+
+Debe apuntar a Java 21. Si IntelliJ ejecuta Gradle con Java 24, puede volver a aparecer el error aunque `build.gradle.kts` tenga toolchain configurado.
+
 ### Hibernate
 
 ```kotlin
@@ -72,28 +107,42 @@ Estas dependencias proporcionan:
 - Integración entre Undertow, RESTEasy y CDI.
 - Conversión entre objetos Java y JSON mediante JSON-B.
 
-### ¿Qué dependencia ya agrega Weld?
+### CDI y DeltaSpike Data
 
-La dependencia:
-
-```kotlin
-implementation("org.jboss.resteasy:resteasy-undertow-cdi:${restEasyVersion}")
-```
-
-incorpora transitivamente:
-
-- `org.jboss.weld.se:weld-se-core`
-- `org.jboss.weld:weld-core-impl`
-- `org.jboss.weld:weld-api`
-- `org.jboss.weld.servlet:weld-servlet-core`
-
-Por eso no es necesario declarar también:
+Para ejecutar `RestPostMain` con CDI en modo Java SE se declara Weld explícitamente:
 
 ```kotlin
 implementation("org.jboss.weld.se:weld-se-core:${weldVersion}")
 ```
 
-Si `weldVersion` no se utiliza en otra dependencia, también puede eliminarse esa variable del archivo.
+DeltaSpike Data necesita tanto la API como la implementación:
+
+```kotlin
+implementation("org.apache.deltaspike.modules:deltaspike-data-module-api:2.0.1")
+implementation("org.apache.deltaspike.modules:deltaspike-data-module-impl:2.0.1")
+```
+
+Si falta `deltaspike-data-module-impl`, CDI puede descubrir la interfaz del repositorio, pero no tendrá la implementación necesaria para ejecutar métodos como `findAll()`.
+
+### Plugin `application`
+
+Para poder ejecutar el proyecto con Gradle se usa:
+
+```kotlin
+plugins {
+    application
+}
+
+application {
+    mainClass.set("com.programacion.web.RestPostMain")
+}
+```
+
+Con esto Gradle sabe qué clase contiene el método `main` y se puede ejecutar:
+
+```powershell
+.\gradlew.bat run
+```
 
 ## `RestPostMain.java`
 
@@ -103,14 +152,26 @@ Es el punto de entrada de la aplicación porque contiene:
 public static void main(String[] args)
 ```
 
-Actualmente realiza una prueba directa de JPA:
+Actualmente realiza una prueba de CDI + JPA + DeltaSpike Data:
 
 ```java
-var emf = Persistence.createEntityManagerFactory("place");
-var em = emf.createEntityManager();
+var cdiContainer = SeContainerInitializer.newInstance()
+        .initialize();
+
+var repo = cdiContainer.select(UserRepository.class).get();
+
+repo.findAll().forEach(System.out::println);
 ```
 
-### ¿Qué sucede al crear la fábrica?
+Es decir:
+
+1. Inicia Weld/CDI.
+2. CDI descubre `JpaConfig`.
+3. `JpaConfig` crea el `EntityManagerFactory`.
+4. DeltaSpike Data crea una implementación para `UserRepository`.
+5. `repo.findAll()` consulta la tabla `users`.
+
+### ¿Qué sucede al crear la fábrica JPA?
 
 Cuando se ejecuta:
 
@@ -133,7 +194,7 @@ La cadena `"place"` conecta el código Java con:
 <persistence-unit name="place">
 ```
 
-El `EntityManagerFactory` es una fábrica pesada y reutilizable. Normalmente se crea una sola vez durante la vida de la aplicación.
+El `EntityManagerFactory` es una fábrica pesada y reutilizable. Normalmente se crea una sola vez durante la vida de la aplicación. En este proyecto lo crea `JpaConfig`, no directamente `RestPostMain`.
 
 El `EntityManager` representa un contexto de trabajo con la base de datos. Se usa para operaciones como:
 
@@ -147,25 +208,25 @@ em.remove(entidad);
 
 El bloque que utiliza `SeBootstrap` está comentado. Por tanto, el programa actual:
 
-- Inicializa JPA.
-- Crea un `EntityManager`.
-- Lo imprime.
+- Inicializa CDI.
+- Crea los objetos JPA desde `JpaConfig`.
+- Obtiene `UserRepository`.
+- Ejecuta `findAll()`.
+- Imprime los usuarios.
 - No inicia el servidor REST.
 
 Cuando se reactive `SeBootstrap`, `MyApplication.class` será la configuración principal de Jakarta REST.
 
-### Cierre de recursos
+### Ejecución recomendada
 
-En una prueba independiente se pueden cerrar los recursos mediante `try-with-resources`:
+Desde la carpeta del proyecto:
 
-```java
-try (var emf = Persistence.createEntityManagerFactory("place");
-     var em = emf.createEntityManager()) {
-    System.out.println(em);
-}
+```powershell
+cd C:\Users\andre\Downloads\WebReact-\rest-post
+.\gradlew.bat clean run
 ```
 
-En una aplicación CDI completa, el ciclo de vida debería administrarse desde clases como `JpaConfig`.
+`clean` es útil cuando se cambió la versión de Java, porque elimina clases compiladas previamente con otra versión.
 
 ## `persistence.xml`
 
@@ -217,6 +278,22 @@ No se está utilizando un administrador de transacciones JTA proporcionado por u
 ```
 
 Indica que Hibernate implementará JPA.
+
+### Registro de entidades
+
+En este proyecto se registra explícitamente la entidad `User`:
+
+```xml
+<class>com.programacion.web.db.User</class>
+```
+
+Esto evita errores como:
+
+```text
+Could not resolve root entity 'User'
+```
+
+Ese error aparece cuando Hibernate ejecuta una consulta sobre una entidad que no fue incluida en la unidad de persistencia.
 
 ### Configuración de PostgreSQL
 
@@ -361,7 +438,7 @@ CDI detectaría que necesita un `EntityManager`, buscaría un productor compatib
 
 ### Import correcto de `@Produces`
 
-Actualmente debe comprobarse que el import sea:
+Debe comprobarse que el import sea:
 
 ```java
 import jakarta.enterprise.inject.Produces;
@@ -390,7 +467,7 @@ public Place buscar() {
 
 ### Alcance del `EntityManager`
 
-Un `EntityManager` no debería ser `@ApplicationScoped`.
+Un `EntityManager` no debería ser `@ApplicationScoped` en una aplicación web real.
 
 `EntityManagerFactory`:
 
@@ -413,6 +490,49 @@ public EntityManager entityManager() {
     return emf.createEntityManager();
 }
 ```
+
+En la prueba actual de consola, el programa ejecuta una operación corta y termina. Para servidor REST, conviene usar `@RequestScoped` o un patrón equivalente por petición.
+
+## `User.java`
+
+Esta clase es la entidad JPA que representa la tabla `users`.
+
+```java
+@Entity
+@Table(name = "users")
+public class User {
+}
+```
+
+### Nombres de columnas
+
+Los nombres de campos Java usan `camelCase`, por ejemplo:
+
+```java
+private String addressCity;
+```
+
+Pero la tabla PostgreSQL usa nombres con guion bajo:
+
+```text
+address_city
+```
+
+Por eso se agregan anotaciones `@Column`:
+
+```java
+@Column(name = "address_city")
+private String addressCity;
+```
+
+Sin ese mapeo Hibernate intentaba consultar columnas como `addressCity` o `addresscity`, y PostgreSQL respondía:
+
+```text
+ERROR: no existe la columna u1_0.addresscity
+Hint: Probablemente quiera hacer referencia a la columna "u1_0.address_city".
+```
+
+La regla práctica es: si el nombre del campo Java no coincide exactamente con el nombre de la columna real, se debe indicar con `@Column(name = "...")`.
 
 ### Método disposer
 
@@ -563,6 +683,7 @@ Al terminar la petición:
 | `persistence.xml` | Configura JPA, Hibernate y la conexión |
 | `beans.xml` | Configura el descubrimiento CDI |
 | `JpaConfig.java` | Produce y administra recursos JPA mediante CDI |
+| `User.java` | Mapea la tabla `users` y sus columnas |
 | `MyApplication.java` | Define la aplicación y ruta base REST |
 | `RestPostMain.java` | Inicia o prueba la aplicación |
 
@@ -574,6 +695,28 @@ Configuración = cómo quiero utilizarlas.
 Código = cuándo y para qué las utilizo.
 ```
 
+## Errores comunes vistos al ejecutar
+
+### `Unsupported class file major version 68`
+
+Significa que se están leyendo clases compiladas con Java 24. La solución aplicada fue:
+
+1. Fijar Java 21 en `build.gradle.kts`.
+2. Configurar Gradle JVM en IntelliJ con Java 21.
+3. Ejecutar `.\gradlew.bat clean run` para borrar clases antiguas.
+
+### `Could not resolve root entity 'User'`
+
+Hibernate no encontraba la entidad `User` dentro de la unidad de persistencia. La solución fue agregarla en `persistence.xml`:
+
+```xml
+<class>com.programacion.web.db.User</class>
+```
+
+### `no existe la columna u1_0.addresscity`
+
+La tabla usa nombres `snake_case`, como `address_city`, pero la clase Java usa `camelCase`, como `addressCity`. La solución fue mapear cada campo con `@Column(name = "...")`.
+
 ## Puntos importantes para repasar
 
 1. `"place"` debe coincidir entre Java y `persistence.xml`.
@@ -584,5 +727,8 @@ Código = cuándo y para qué las utilizo.
 6. `@PreDestroy` puede cerrar la fábrica al apagar la aplicación.
 7. `beans.xml` configura CDI; `persistence.xml` configura JPA.
 8. Las dependencias no reemplazan la configuración específica de la aplicación.
-9. `resteasy-undertow-cdi` ya incorpora Weld transitivamente.
+9. Para ejecutar con Gradle se necesita el plugin `application` y `mainClass`.
 10. Las credenciales reales no deberían guardarse en el repositorio.
+11. Java 24 produce `major version 68`; este proyecto debe compilarse con Java 21.
+12. Las entidades pueden registrarse explícitamente en `persistence.xml`.
+13. Si la base usa `snake_case`, los campos `camelCase` deben mapearse con `@Column`.
