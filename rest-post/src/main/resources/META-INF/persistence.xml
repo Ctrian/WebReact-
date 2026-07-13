@@ -6,7 +6,6 @@
     <persistence-unit name="place" transaction-type="RESOURCE_LOCAL">
 
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-
         <class>com.programacion.web.db.User</class>
 
         <properties>
@@ -15,9 +14,9 @@
             <property name="jakarta.persistence.jdbc.user" value="postgres" />
             <property name="jakarta.persistence.jdbc.password" value="RAAGj731" />
 
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
-            <property name="hibernate.highlight_sql" value="true" />
 
         </properties>
     </persistence-unit>

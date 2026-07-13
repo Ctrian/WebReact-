@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    application
+    id("application")
     id("io.freefair.lombok") version "9.5.0"
 }
 
@@ -19,7 +19,7 @@ java {
 
 val restEasyVersion = "7.0.2.Final"
 val weldVersion = "6.0.4.Final"
-var hibernateVersion = "7.4.1.Final"
+val hibernateVersion = "6.6.49.Final"
 
 dependencies {
     //CDI

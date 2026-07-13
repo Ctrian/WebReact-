@@ -19,15 +19,15 @@ public class RestPostMain {
     public static void main(String[] args) throws InterruptedException {
         int port = args.length > 0 ? Integer.parseInt(args[0]) : 8080;
 
-        var cdiContainer = SeContainerInitializer.newInstance()
-                .initialize();
+        // var cdiContainer = SeContainerInitializer.newInstance()
+        //        .initialize();
 
         // var repo = cdiContainer.select(UserRepository.class).get();
         // repo.findAll().forEach(System.out::println);
 
         // mostrar el nombre del contenedor, en este caso es un contenedor Weld SE
-        var cc = cdiContainer.select(JpaConfig.class).get();
-        System.out.println(cc);
+        // var cc = cdiContainer.select(JpaConfig.class).get();
+        // System.out.println(cc);
 
     /*
      * Este bloque iniciaría la aplicación REST mediante Jakarta REST
