@@ -20,7 +20,7 @@ function App() {
     }
     const props : Hello2Props = {
         name : "OTRO NOMBRE!",
-        age : 20
+        age : 30
     }
     return (
         <>
